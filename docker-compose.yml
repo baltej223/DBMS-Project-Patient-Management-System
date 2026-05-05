@@ -32,6 +32,20 @@ services:
     networks:
       - mednet
 
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    container_name: admin
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+    networks:
+      - mednet
+    depends_on:
+      - db
+
   db:
     image: postgres:16
     environment:

@@ -1,6 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  provider      = "prisma-client-js"
+  output        = "../generated/prisma"
   binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
@@ -10,51 +10,51 @@ datasource db {
 }
 
 model Employee {
-  employeeid   Int        @id @default(autoincrement())
-  name         String     @db.VarChar(100)
-  phone_number String?    @db.VarChar(20)
-  email        String     @db.VarChar(100)
-  pwd          String     @db.VarChar(255)
-  role         String     @db.VarChar(50)
+  employeeid   Int     @id @default(autoincrement())
+  name         String  @db.VarChar(100)
+  phone_number String? @db.VarChar(20)
+  email        String  @db.VarChar(100)
+  pwd          String  @db.VarChar(255)
+  role         String  @db.VarChar(50)
 
-  prescribed   Prescribe[]
+  prescribed Prescribe[]
 
   @@map("employees")
 }
 
 model Patient {
-  patientid    Int         @id @default(autoincrement())
-  name         String      @db.VarChar(100)
+  patientid    Int     @id @default(autoincrement())
+  name         String  @db.VarChar(100)
   age          Int
-  gender       String      @db.VarChar(10)
-  phone_number String?     @db.VarChar(20)
+  gender       String  @db.VarChar(10)
+  phone_number String? @db.VarChar(20)
 
   prescriptions Prescribe[]
-  reports        Report[]
+  reports       Report[]
 
   @@map("patients")
 }
 
 model Prescribe {
-  id         Int      @id @default(autoincrement())
+  id         Int @id @default(autoincrement())
   employeeid Int
   patientid  Int
 
-  employee   Employee @relation(fields: [employeeid], references: [employeeid])
-  patient    Patient  @relation(fields: [patientid], references: [patientid])
+  employee Employee @relation(fields: [employeeid], references: [employeeid])
+  patient  Patient  @relation(fields: [patientid], references: [patientid])
 
   @@map("prescribe")
 }
 
 model Report {
   reportid      Int       @id @default(autoincrement())
-  patientid     Int? 
-  type_         String    @db.VarChar(100) @map("type")
-  date_uploaded DateTime? 
+  patientid     Int?
+  type_         String    @map("type") @db.VarChar(100)
+  date_uploaded DateTime?
   previous_hash String?   @db.Text
   current_hash  String?   @db.Text
 
-  patient       Patient?  @relation(fields: [patientid], references: [patientid])
+  patient Patient? @relation(fields: [patientid], references: [patientid])
 
   @@map("reports")
 }

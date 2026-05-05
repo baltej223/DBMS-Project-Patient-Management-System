@@ -50,7 +50,7 @@ const auth_url = "http://auth:3000/login";///////////////
 
 router.get("/", (req: Request, res: Response) => {
   Log("/", "GET", 200);
-  res.send("HALO");
+  res.send("I am a TeaPot.");
 });
 
 router.post("/login", async (req: Request, res: Response) => {

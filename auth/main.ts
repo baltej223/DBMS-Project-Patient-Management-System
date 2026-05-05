@@ -1,4 +1,4 @@
-import express , {Request, Response} from 'express';
+import express, { Request, Response } from 'express';
 import passport from 'passport';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import jwt from 'jsonwebtoken';
@@ -8,27 +8,27 @@ const prisma = new PrismaClient();
 
 // const patients = await prisma.patient.findMany();
 //
-const JWT_SECRET:any = process.env.JWT_SECRET || "ThisistheMAKESHIFTenvVariableWhichWIllbEChangedAfterWords"; // Or use dotenv
+const JWT_SECRET: any = process.env.JWT_SECRET || "ThisistheMAKESHIFTenvVariableWhichWIllbEChangedAfterWords"; // Or use dotenv
 
 const opts = {
-    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: JWT_SECRET
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: JWT_SECRET
 };
 
 
 passport.use(
-    new JwtStrategy(opts, async (_jwt_payload, done) => {
-        let user;
-        // (async ()=>{
-        //   const patient = await prisma.patient.findUnique({
-        //     where:{
-        //       email:
-        //     }
-        //   });
-        // })();
-        if (user) return done(null, user);
-        else return done(null, false);
-    })
+  new JwtStrategy(opts, async (_jwt_payload, done) => {
+    let user;
+    // (async ()=>{
+    //   const patient = await prisma.patient.findUnique({
+    //     where:{
+    //       email:
+    //     }
+    //   });
+    // })();
+    if (user) return done(null, user);
+    else return done(null, false);
+  })
 );
 
 const app = express();
@@ -36,42 +36,42 @@ app.use(express.json());
 app.use(passport.initialize());
 
 
-app.post('/login', async (req:Request, res:Response) => {
-    console.log(" [Container:Auth] Post request received at /login ");
-    const { email, password } = req.body;
-    console.log(email, password);
-    const user = await prisma.employee.findFirst({
-      where:{
-        email:email,
-      }
-    });
-    console.log(user);
-    if (!user) {
-      console.log("No user");
-      return res.status(401).json({ message: 'Invalid email or password' });
+app.post('/login', async (req: Request, res: Response) => {
+  console.log(" [Container:Auth] Post request received at /login ");
+  const { email, password } = req.body;
+  console.log(email, password);
+  const user = await prisma.employee.findFirst({
+    where: {
+      email: email,
     }
+  });
+  console.log(user);
+  if (!user) {
+    console.log("No user");
+    return res.status(401).json({ message: 'Invalid email or password' });
+  }
 
-    // const isMatch = await bcrypt.compare(password, user.pwd); // When the passwords stored are hashed.
-    const isMatch = password === user.pwd ? true: false;
-    console.log(isMatch, password, user.pwd);
+  // const isMatch = await bcrypt.compare(password, user.pwd); // When the passwords stored are hashed.
+  const isMatch = password === user.pwd ? true : false;
+  console.log(isMatch, password, user.pwd);
 
-    if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid email or password' });
-    }
+  if (!isMatch) {
+    return res.status(401).json({ message: 'Invalid email or password' });
+  }
 
-    const payload = {
-      employeeid: user.employeeid,
-      email: user.email,
-      role: user.role
-    };
-    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+  const payload = {
+    employeeid: user.employeeid,
+    email: user.email,
+    role: user.role
+  };
+  const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
 
-    res.json({ token });
+  res.json({ token });
 });
 
 
 // POST /verify
-app.post('/verify', (req:Request, res:Response) => {
+app.post('/verify', (req: Request, res: Response) => {
   console.log(" [Container:Auth] Post request received at /verify ");
   const { token } = req.body;
 
@@ -100,5 +100,5 @@ app.get("/ping", (_req: Request, res: Response) => {
 // );
 
 app.listen(3000, () => {
-    console.log('✅ Auth server running at http://localhost:3000');
+  console.log('✅ Auth server running at http://localhost:3000');
 });
