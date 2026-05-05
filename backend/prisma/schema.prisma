@@ -72,3 +72,13 @@ model PatientHistory {
 
   @@map("patient_history")
 }
+
+model SystemAuditLog {
+  log_id          Int      @id @default(autoincrement())
+  event_name      String   @db.VarChar(100)
+  performed_by    Int?
+  event_timestamp DateTime @default(now())
+  details         String?  @db.Text
+
+  @@map("system_audit_logs")
+}

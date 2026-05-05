@@ -222,6 +222,30 @@ router.get("/patient/:id/history", verifyToken, async (req: any, res: Response) 
   }
 });
 
+// DBMS PROJECT INTEGRATION: Analytics & Integrity Checks
+// This route demonstrates the use of the SQL VIEW 'health_integrity_audit'
+router.get("/analytics/integrity", verifyToken, async (req: any, res: Response) => {
+    try {
+        const integrityReport = await prisma.$queryRaw`SELECT * FROM health_integrity_audit`;
+        return res.json({ integrityReport });
+    } catch (err) {
+        console.error("Integrity audit failed:", err);
+        return res.status(500).json({ error: "Failed to fetch integrity report. Ensure rls_setup.sql has been run." });
+    }
+});
+
+// DBMS PROJECT INTEGRATION: Stored Procedure Call
+// This route triggers the 'sp_generate_doctor_activity_report' procedure
+router.post("/analytics/refresh-stats", verifyToken, async (req: any, res: Response) => {
+    try {
+        await prisma.$executeRaw`CALL sp_generate_doctor_activity_report()`;
+        return res.json({ message: "Activity report generated in system_audit_logs." });
+    } catch (err) {
+        console.error("Stats refresh failed:", err);
+        return res.status(500).json({ error: "Failed to run procedure. Ensure dbms_implementation.sql has been run." });
+    }
+});
+
 
 /////////Mounting all the middlewares//////////
 // Mounting JSON Checker
@@ -233,4 +257,4 @@ app.use("/", router);
 const port = process.env.BACKEND_PORT || 8080;
 app.listen(port, () => {
     console.log(`Backend running on port ${port}`);
-});
+});
